@@ -1,0 +1,22 @@
+# Creating our data.frame
+# Create variable vectors
+
+Freq <- c(.6, .3, .4, .4, .2, .6, .3, .4, .9, .2)
+bloodp <- c(103, 87, 32, 42, 59, 109, 78, 205, 135, 176)
+first <- c(1, 1, 1, 1, 0, 0, 0, 0, NA, 1)
+second <- c(0, 0, 1, 1, 0, 0, 1, 1, 1, 1)
+finaldecision <- c(0, 1, 0, 1, 0, 1, 0, 1, 1, 1)
+
+#combine into data.frame
+hospital_data <- data.frame(Freq, bloodp, first, second, finaldecision)
+head(hospital_data)
+
+# create boxplots for bloodpressure vs first and second assessments
+boxplot(bloodp ~ first, data = hospital_data, main = "Blood Pressure and First Assessment Results",
+        xlab = "First Assessment (0 = Good, 1 = Bad)", ylab = "Blood Pressure")
+
+boxplot(bloodp ~ second, data = hospital_data, main = "Blood Pressure and Second Assessment Results",
+        xlab = "Second Assessment (0 = Low, 1 = High)", ylab = "Blood Pressure")
+
+# create histogram 
+hist(hospital_data$bloodp, main = "Patient Blood Pressure", xlab = "Blood Pressure")
