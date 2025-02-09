@@ -11,12 +11,15 @@ finaldecision <- c(0, 1, 0, 1, 0, 1, 0, 1, 1, 1)
 hospital_data <- data.frame(Freq, bloodp, first, second, finaldecision)
 head(hospital_data)
 
-# create boxplots for bloodpressure vs first and second assessments
+# create boxplots for bloodpressure vs first, second, and final assessments
 boxplot(bloodp ~ first, data = hospital_data, main = "Blood Pressure and First Assessment Results",
         xlab = "First Assessment (0 = Good, 1 = Bad)", ylab = "Blood Pressure")
 
 boxplot(bloodp ~ second, data = hospital_data, main = "Blood Pressure and Second Assessment Results",
         xlab = "Second Assessment (0 = Low, 1 = High)", ylab = "Blood Pressure")
+
+boxplot(bloodp ~ finaldecision, data = hospital_data, main = "Blood Pressure by Final Decision",
+        xlab = "Final Decision (0 = Low, 1 = High)", ylab = "Blood Pressure")
 
 # create histogram 
 hist(hospital_data$bloodp, main = "Patient Blood Pressure", xlab = "Blood Pressure")
