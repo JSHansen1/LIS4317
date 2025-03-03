@@ -1,0 +1,27 @@
+data("iris")
+head(iris)
+summary(iris)
+str(iris)
+
+# S3 
+class(iris)
+
+# S4
+isS4(iris)
+
+typeof(iris)
+
+# S3 and S4 examples
+S3_1 <- list(name = "Josh", age = 29, GPA = 3.5)
+S3_1
+
+setClass("student", slots = list(name = "character", age = "numeric", GPA = "numeric"))
+S4_1 <- new("student", name = "Josh", age = 29, GPA = 3.5)
+S4_1
+
+S3_2 <- list(name = "Josh", height = 72, weight = 185)
+S3_2
+
+setClass("student", slots = list(name = "character", height = "numeric", weight = "numeric"))
+S4_2 <- new("student", name = "Josh", height = 72, weight = 185)
+S4_2
