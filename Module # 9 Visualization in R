@@ -1,0 +1,44 @@
+# install.packages("AER")
+library(dplyr)
+library(ggplot2)
+library(AER)
+library(scales)
+data("Affairs")
+dataset <- Affairs
+
+# boxplot 
+# creates age groups so we can make a better boxplot
+dataset <- mutate(dataset, age_group = case_when(
+  age < 30 ~ "20s",
+  age < 40 ~ "30s",
+  age < 50 ~ "40s",
+  age < 60 ~ "50s"
+))
+
+ggplot(dataset, aes(x = age_group, y = affairs, color = gender)) + 
+  geom_boxplot() + 
+  labs(title = "Number of Affairs by Age Group", x = "Age Group", y = "# of Affairs",
+       fill = "gender")
+
+# scatterplot
+#ggplot(dataset, aes(x = age, y = affairs, color = gender)) + 
+#  geom_point() + labs(title = "Affairs by Age and Gender", x = "Age",
+#                      y = "# of Affairs", color = "Gender")
+
+ggplot(dataset, aes(x = age, y = affairs, color = gender)) + 
+  geom_jitter() + labs(title = "Affairs by Age and Gender", x = "Age",
+                      y = "# of Affairs", color = "Gender")
+  
+# barplot of which age groups/genders have had affairs or not, no numbers of affairs
+# create a new row for whether or not they have had an affair
+dataset <- mutate(dataset, had_affair = case_when(
+  affairs > 0 ~ "yes",
+  affairs < 1 ~ "no"
+))
+
+ggplot(dataset, aes(x = age_group, fill = had_affair)) + 
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = percent_format()) + 
+  labs(title = "Percentage of Affairs by Age Group", x = "Age Group", y = "Percentage",
+       fill = "Had Affair")
+  
