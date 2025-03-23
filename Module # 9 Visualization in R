@@ -38,6 +38,7 @@ dataset <- mutate(dataset, had_affair = case_when(
 
 ggplot(dataset, aes(x = age_group, fill = had_affair)) + 
   geom_bar(position = "fill") +
+  facet_wrap(~gender) + 
   scale_y_continuous(labels = percent_format()) + 
   labs(title = "Percentage of Affairs by Age Group", x = "Age Group", y = "Percentage",
        fill = "Had Affair")
