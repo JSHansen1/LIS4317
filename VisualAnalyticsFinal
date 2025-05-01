@@ -1,0 +1,168 @@
+library(ggplot2)
+library(dplyr)
+library(ggrepel)
+
+# Import Champion Statistics
+champion_data <- read.csv("C:/Users/Joshu/Documents/LIS 4370 R Programming/vis analytics/Teamfight Tactics 14.3 Early Data.csv")
+
+# Change percentage strings for Top4 and Won into numeric values
+champion_data$Top4 <- as.numeric(sub("%", "", champion_data$Top4))
+champion_data$Won <- as.numeric(sub("%", "", champion_data$Won))
+
+# Add Cost of each champion to the data
+champion_costs <- c(
+  # 1-Cost Champions
+  "Alistar" = 1,
+  "Dr. Mundo" = 1,
+  "Jax" = 1,
+  "Kindred" = 1,
+  "Kog'Maw" = 1,
+  "Morgana" = 1,
+  "Nidalee" = 1,
+  "Poppy" = 1,
+  "Seraphine" = 1,
+  "Shaco" = 1,
+  "Sylas" = 1,
+  "Vi" = 1,
+  "Zyra" = 1,
+  
+  # 2-Cost Champions
+  "Darius" = 2,
+  "Ekko" = 2,
+  "Graves" = 2,
+  "Illaoi" = 2,
+  "Jhin" = 2,
+  "LeBlanc" = 2,
+  "Naafiri" = 2,
+  "Rhaast" = 2,
+  "Shyvana" = 2,
+  "Skarner" = 2,
+  "Twisted Fate" = 2,
+  "Vayne" = 2,
+  "Veigar" = 2,
+  
+  # 3-Cost Champions
+  "Braum" = 3,
+  "Draven" = 3,
+  "Elise" = 3,
+  "Fiddlesticks" = 3,
+  "Galio" = 3,
+  "Gragas" = 3,
+  "Jarvan IV" = 3,
+  "Jinx" = 3,
+  "Mordekaiser" = 3,
+  "Rengar" = 3,
+  "Senna" = 3,
+  "Varus" = 3,
+  "Yuumi" = 3,
+  
+  # 4-Cost Champions
+  "Annie" = 4,
+  "Aphelios" = 4,
+  "Brand" = 4,
+  "Cho'Gath" = 4,
+  "Leona" = 4,
+  "Miss Fortune" = 4,
+  "Neeko" = 4,
+  "Sejuani" = 4,
+  "Vex" = 4,
+  "Xayah" = 4,
+  "Zed" = 4,
+  "Zeri" = 4,
+  "Ziggs" = 4,
+  
+  # 5-Cost Champions
+  "Aurora" = 5,
+  "Garen" = 5,
+  "Kobuko" = 5,
+  "Renekton" = 5,
+  "Samira" = 5,
+  "Urgot" = 5,
+  "Viego" = 5,
+  "Zac" = 5)
+
+champion_data$Cost <- champion_costs[champion_data$Unit]
+
+# Convert Cost to factor
+champion_data$Cost <- factor(champion_data$Cost, levels = c(1, 2, 3, 4, 5))
+
+# Assign colors to the champions cost that matches the game
+cost_colors <- c("1" = "white", "2" = "green", "3" = "blue", "4" = "purple", "5" = "gold")
+
+# Visualization 1 - Scatterplot of Games Played vs Delta, color coded for champ cost
+ggplot(champion_data, aes(x = Games, y = Delta, color = Cost)) +
+  geom_point(size = 5) + 
+  scale_color_manual(values = cost_colors) + 
+  labs(title = "Champion Popularity vs. Performance (Patch 14.3)", x = "Total Games Played",
+       y = "Performance Delta (Lower is Better)", color = "Cost Tier") + 
+  theme_dark()
+
+# Same visualization with trend lines by champion cost
+ggplot(champion_data, aes(x = Games, y = Delta, color = Cost)) +
+  geom_point(size = 5) + geom_smooth(method = "lm", se = FALSE, size = 1.5) +
+  scale_color_manual(values = cost_colors) + 
+  labs(title = "Champion Popularity vs. Performance (Patch 14.3)", x = "Total Games Played",
+       y = "Performance Delta (Lower is Better)", color = "Cost Tier") + 
+  theme_dark()
+
+
+# Boxplot visualization of performance delta for the different cost tiers
+ggplot(champion_data, aes(x = Cost, y = Delta, fill = Cost)) + 
+  geom_boxplot(color = "gray20", outlier.color = "gray20", size = 1) + 
+  scale_fill_manual(values = cost_colors) + 
+  labs(title = "Delta Distribution by Champion Cost", x = "Champion Cost", y = "Performance Delta (Lower is Better)") +
+  theme_dark() + theme(legend.position = "none")
+
+
+# Scatterplot of Top4% vs Win% by cost tier
+ggplot(champion_data, aes(x = Top4, y = Won, color = Cost)) + 
+  geom_point(size = 4) + 
+  scale_color_manual(values = cost_colors) + 
+  labs(title = "Win Rate vs. Top 4 Rate by Champion (Patch 14.3)", x = "Top 4 Rate (Percentage)",
+       y = "Win Rate (Percentage)", color = "Champion Cost") +
+  theme_dark()
+
+# Identify the outliers for the plot we just made
+ggplot(champion_data, aes(x = Top4, y = Won, color = Cost, label = Unit)) +
+  geom_point(size = 4) +
+  geom_text_repel(data = subset(champion_data, Won > 18 | Won < 10 | Top4 > 60 | Top4 < 40),
+    size = 3, color = "white") +
+  scale_color_manual(values = cost_colors) +
+  labs(title = "Win Rate vs. Top 4 Rate with Outlier Labels", x = "Top 4 Rate (Percentage)",
+    y = "Win Rate (Percentage)", color = "Champion Cost") +
+  theme_dark()
+
+
+# Play rate vs performance delta for each cost tier individually
+# 1 costs
+ggplot(filter(champion_data, Cost == 1), aes(x = Games, y = Delta, label = Unit)) + 
+  geom_point(color = "white", size = 6) + 
+  geom_text_repel(color = "white", size = 3.2) + 
+  labs(title = "1-Cost Champions: Popularity vs Performance", x = "Total Games Played", y = "Performance Delta (Lower is Better)") + 
+  theme_dark()
+# 2 costs
+ggplot(filter(champion_data, Cost == 2), aes(x = Games, y = Delta, label = Unit)) + 
+  geom_point(color = "green", size = 6) + 
+  geom_text_repel(color = "white", size = 3.2) + 
+  labs(title = "2-Cost Champions: Popularity vs Performance", x = "Total Games Played", y = "Performance Delta (Lower is Better)") + 
+  theme_dark()
+# 3 costs
+ggplot(filter(champion_data, Cost == 3), aes(x = Games, y = Delta, label = Unit)) + 
+  geom_point(color = "blue", size = 6) + 
+  geom_text_repel(color = "white", size = 3.2) + 
+  labs(title = "3-Cost Champions: Popularity vs Performance", x = "Total Games Played", y = "Performance Delta (Lower is Better)") + 
+  theme_dark()
+# 4 costs
+ggplot(filter(champion_data, Cost == 4), aes(x = Games, y = Delta, label = Unit)) + 
+  geom_point(color = "purple", size = 6) + 
+  geom_text_repel(color = "white", size = 3.2) + 
+  labs(title = "4-Cost Champions: Popularity vs Performance", x = "Total Games Played", y = "Performance Delta (Lower is Better)") + 
+  theme_dark()
+# 5 costs
+ggplot(filter(champion_data, Cost == 5), aes(x = Games, y = Delta, label = Unit)) + 
+  geom_point(color = "gold", size = 6) + 
+  geom_text_repel(color = "white", size = 3.2) + 
+  labs(title = "5-Cost Champions: Popularity vs Performance", x = "Total Games Played", y = "Performance Delta (Lower is Better)") + 
+  theme_dark()
+
+  
